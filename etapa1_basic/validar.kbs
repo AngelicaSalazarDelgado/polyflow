@@ -1,0 +1,93 @@
+# Etapa 1 - Validacion y normalizacion
+# Lee lecturas.csv, decide que registros continuan y escribe
+# datos_normalizados.csv y rechazados.csv
+
+entrada$ = "C:\polyflow\datos\lecturas.csv"
+salida$ = "C:\polyflow\salida\datos_normalizados.csv"
+descartes$ = "C:\polyflow\salida\rechazados.csv"
+
+limite_inferior = -10
+limite_superior = 60
+
+dim campo$(6)
+
+if exists(salida$) then kill salida$
+if exists(descartes$) then kill descartes$
+
+open 1, entrada$
+open 2, salida$
+open 3, descartes$
+
+encabezado$ = readline(1)
+encabezado$ = replace(encabezado$, chr(13), "")
+encabezado$ = replace(encabezado$, chr(10), "")
+writeline 2, encabezado$
+writeline 3, "ID,MOTIVO"
+
+total = 0
+aceptados = 0
+rechazados = 0
+
+while not eof(1)
+   linea$ = readline(1)
+   linea$ = replace(linea$, chr(13), "")
+   linea$ = replace(linea$, chr(10), "")
+
+   if length(linea$) > 0 then
+      total = total + 1
+
+      resto$ = linea$ + ","
+      for k = 0 to 5
+         p = instr(resto$, ",")
+         campo$[k] = left(resto$, p - 1)
+         resto$ = mid(resto$, p + 1, length(resto$) - p)
+      next k
+
+      motivo$ = ""
+
+      for k = 0 to 5
+         if length(campo$[k]) = 0 and motivo$ = "" then
+            motivo$ = "CAMPO_VACIO"
+         end if
+      next k
+
+      if motivo$ = "" then
+         temperatura = float(campo$[2])
+         precipitacion = float(campo$[3])
+         viento = float(campo$[4])
+         bateria = float(campo$[5])
+
+         if temperatura < limite_inferior or temperatura > limite_superior then
+            motivo$ = "TEMPERATURA_FUERA_DE_RANGO"
+         end if
+
+         if motivo$ = "" and precipitacion < 0 then
+            motivo$ = "PRECIPITACION_NEGATIVA"
+         end if
+
+         if motivo$ = "" and viento < 0 then
+            motivo$ = "VIENTO_NEGATIVO"
+         end if
+
+         if motivo$ = "" and (bateria < 0 or bateria > 100) then
+            motivo$ = "BATERIA_FUERA_DE_RANGO"
+         end if
+      end if
+
+      if motivo$ = "" then
+         writeline 2, linea$
+         aceptados = aceptados + 1
+      else
+         writeline 3, campo$[0] + "," + motivo$
+         rechazados = rechazados + 1
+      end if
+   end if
+end while
+
+close 1
+close 2
+close 3
+
+print "Registros leidos: " + total
+print "Aceptados: " + aceptados
+print "Rechazados: " + rechazados

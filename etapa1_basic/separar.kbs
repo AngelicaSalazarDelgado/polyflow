@@ -1,0 +1,24 @@
+# Etapa 1 - prueba de separacion de campos
+
+dim campo$(6)
+
+open 1, "C:\polyflow\datos\lecturas.csv"
+encabezado$ = readline(1)
+linea$ = readline(1)
+close 1
+
+linea$ = replace(linea$, chr(13), "")
+linea$ = replace(linea$, chr(10), "")
+
+print "Linea leida: " + linea$
+
+resto$ = linea$ + ","
+for k = 0 to 5
+   p = instr(resto$, ",")
+   campo$[k] = left(resto$, p - 1)
+   resto$ = mid(resto$, p + 1, length(resto$) - p)
+next k
+
+for k = 0 to 5
+   print "[" + campo$[k] + "]"
+next k
