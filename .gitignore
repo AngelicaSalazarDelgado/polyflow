@@ -3,4 +3,6 @@ salida/
 *.o
 *.mod
 etapa2_fortran/prueba
+etapa2_fortran/leer
+etapa2_fortran/metricas
 herramientas/
