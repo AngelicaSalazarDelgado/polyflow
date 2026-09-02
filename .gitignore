@@ -1,0 +1,6 @@
+salida/
+*.class
+*.o
+*.mod
+etapa2_fortran/prueba
+herramientas/

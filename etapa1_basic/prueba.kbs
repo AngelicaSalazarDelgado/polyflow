@@ -1,0 +1,4 @@
+print "BASIC-256 OK"
+open 1, "C:\polyflow\salida\prueba_basic.txt"
+writeline 1, "hola desde basic256"
+close 1
